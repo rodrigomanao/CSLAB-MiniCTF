@@ -1,0 +1,19 @@
+{"timestamp":"00:00:01.119","source":"Server","level":"LOG","message":""}
+{"timestamp":"00:00:05.567","source":"Browser","level":"INFO","message":"Download the React DevTools for a better development experience: https://react.dev/link/react-devtools"}
+{"timestamp":"00:00:05.604","source":"Server","level":"ERROR","message":"Failed to proxy http://localhost:8000/api/posts AggregateError"}
+{"timestamp":"00:00:05.604","source":"Server","level":"ERROR","message":"AggregateError"}
+{"timestamp":"00:00:05.613","source":"Server","level":"ERROR","message":"Failed to proxy http://localhost:8000/api/posts AggregateError"}
+{"timestamp":"00:00:05.614","source":"Server","level":"ERROR","message":"AggregateError"}
+{"timestamp":"00:00:12.752","source":"Server","level":"ERROR","message":"Failed to proxy http://localhost:8000/api/posts AggregateError"}
+{"timestamp":"00:00:12.753","source":"Server","level":"ERROR","message":"AggregateError"}
+{"timestamp":"00:00:12.756","source":"Server","level":"ERROR","message":"Failed to proxy http://localhost:8000/api/posts AggregateError"}
+{"timestamp":"00:00:12.756","source":"Server","level":"ERROR","message":"AggregateError"}
+{"timestamp":"00:00:13.171","source":"Browser","level":"INFO","message":"Download the React DevTools for a better development experience: https://react.dev/link/react-devtools"}
+{"timestamp":"00:00:13.203","source":"Server","level":"ERROR","message":"Failed to proxy http://localhost:8000/api/posts AggregateError"}
+{"timestamp":"00:00:13.203","source":"Server","level":"ERROR","message":"AggregateError"}
+{"timestamp":"00:00:13.206","source":"Server","level":"ERROR","message":"Failed to proxy http://localhost:8000/api/posts AggregateError"}
+{"timestamp":"00:00:13.207","source":"Server","level":"ERROR","message":"AggregateError"}
+{"timestamp":"00:00:15.208","source":"Server","level":"ERROR","message":"Failed to proxy http://localhost:8000/api/posts AggregateError"}
+{"timestamp":"00:00:15.208","source":"Server","level":"ERROR","message":"AggregateError"}
+{"timestamp":"00:00:15.210","source":"Server","level":"ERROR","message":"Failed to proxy http://localhost:8000/api/posts AggregateError"}
+{"timestamp":"00:00:15.211","source":"Server","level":"ERROR","message":"AggregateError"}
