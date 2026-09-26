@@ -36,13 +36,7 @@ From the project root:
 make install
 ```
 
-The backend dependencies are installed into the active Python environment. For an isolated Python setup, create and activate a virtual environment first:
-
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-make install
-```
+This creates `.venv` and installs the backend dependencies there. The Makefile uses that environment automatically, so you do not need to activate it manually.
 
 ## Run the project
 
@@ -80,6 +74,49 @@ The frontend proxies `/api/*` requests to the FastAPI server on port `8000`. If 
 | `/register` | Account registration interface |
 
 The login and registration pages currently provide the frontend flow and form layout. Persistent accounts, sessions, the dashboard, and the intentionally vulnerable CTF functionality will be implemented in later stages inside the isolated training environment.
+
+## Database setup
+
+The backend uses PostgreSQL through direct parameterized SQL with `psycopg`. Copy the example environment file and replace the password with the one configured for your local `postgres` user:
+
+```bash
+cp .env.example .env
+```
+
+For the EDB PostgreSQL installer used in the course, `.env` should contain a value like:
+
+```env
+DATABASE_URL=postgresql://postgres:YOUR_POSTGRES_PASSWORD@localhost:5432/cslab
+```
+
+If your password contains URL characters such as `@`, encode them in the URL. For example, `Rodrigo@2212` becomes:
+
+```env
+DATABASE_URL=postgresql://postgres:Rodrigo%402212@localhost:5432/cslab
+```
+
+Do not commit `.env`; it is ignored by Git.
+
+Install the Python dependencies, create the tables and seed the training users, then start the backend:
+
+```bash
+make install
+psql -d cslab -U postgres -f database/schema.sql
+make backend
+```
+
+The SQL script creates the `users` table and seeds three fictional accounts. The `super-admin` account has `id=1`, which is useful for the controlled IDOR exercise. The seed passwords are `AdminPass123!`, `TrainingPass123!` and `StudentPass123!`, respectively; change them before sharing the isolated environment.
+
+The authentication endpoints are:
+
+```text
+POST /api/auth/register
+POST /api/auth/login
+```
+
+You can test them with Postman or with the frontend forms. New passwords are stored as Argon2 hashes; they are never stored as plain text. The API queries use `%s` parameters rather than string interpolation.
+
+The repository also includes a REST Client request file at `requests/cslab-api.rest`. Install the VS Code **REST Client** extension and use the `Send Request` link above each request to test the API directly from the editor.
 
 ## Development notes
 

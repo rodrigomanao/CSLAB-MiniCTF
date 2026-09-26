@@ -5,11 +5,31 @@ import SiteNav from '../components/SiteNav'
 import AuthLink from '../components/AuthLink'
 
 export default function LoginPage() {
-  const [submitted, setSubmitted] = useState(false)
+  const [message, setMessage] = useState('')
+  const [error, setError] = useState('')
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    setSubmitted(true)
+    setMessage('')
+    setError('')
+    const formData = new FormData(event.currentTarget)
+
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          identity: formData.get('identity'),
+          password: formData.get('password'),
+        }),
+      })
+      const data = await response.json()
+      if (!response.ok) throw new Error(data.detail ?? 'Login failed.')
+      setMessage(`Welcome back, ${data.username}.`)
+      event.currentTarget.reset()
+    } catch (submissionError) {
+      setError(submissionError instanceof Error ? submissionError.message : 'Login failed.')
+    }
   }
 
   return (
@@ -29,7 +49,8 @@ export default function LoginPage() {
             <input id="login-password" name="password" type="password" autoComplete="current-password" required />
 
             <button className="auth-submit" type="submit">Login</button>
-            {submitted && <p className="auth-note" role="status">The login form is ready for the authentication API.</p>}
+            {message && <p className="auth-note" role="status">{message}</p>}
+            {error && <p className="auth-error" role="alert">{error}</p>}
           </form>
 
           <div className="auth-switch">

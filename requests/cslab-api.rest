@@ -1,0 +1,88 @@
+@baseUrl = http://localhost:8000
+@newUsername = rest-client-user
+@newEmail = rest-client@cslab.pt
+@newPassword = RestClient123!
+@adminUsername = super-admin
+@adminEmail = super-admin@cslab.pt
+@adminPassword = AdminPass123!
+@userEmail = training-user@cslab.pt
+@userPassword = TrainingPass123!
+
+### 1. Backend health check
+# Expected: 200
+GET {{baseUrl}}/api/health
+
+### 2. List blog posts
+# Expected: 200 with the three CTF posts
+GET {{baseUrl}}/api/posts
+
+### 3. Register a new user
+# Expected: 201 the first time; 409 if this user already exists.
+POST {{baseUrl}}/api/auth/register
+Content-Type: application/json
+
+{
+  "username": "{{newUsername}}",
+  "email": "{{newEmail}}",
+  "password": "{{newPassword}}"
+}
+
+### 4. Login with the newly registered username
+# Expected: 200 with the created user's id, username, email and role.
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "identity": "{{newUsername}}",
+  "password": "{{newPassword}}"
+}
+
+### 5. Login with the newly registered email
+# Expected: 200
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "identity": "{{newEmail}}",
+  "password": "{{newPassword}}"
+}
+
+### 6. Login as the seeded super-admin
+# Controlled training account. Expected: 200 with id 1 and role admin.
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "identity": "{{adminUsername}}",
+  "password": "{{adminPassword}}"
+}
+
+### 7. Login as the seeded training user by email
+# Expected: 200 with id 2 and role user.
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "identity": "{{userEmail}}",
+  "password": "{{userPassword}}"
+}
+
+### 8. Login as the seeded super-admin by email
+# Expected: 200 with id 1 and role admin.
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "identity": "{{adminEmail}}",
+  "password": "{{adminPassword}}"
+}
+
+### 9. Invalid login
+# Expected: 401
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "identity": "{{adminUsername}}",
+  "password": "WrongPassword123!"
+}

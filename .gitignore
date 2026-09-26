@@ -6,4 +6,8 @@ frontend/.next/
 __pycache__/
 *.py[cod]
 .env
+.env.*
+!.env.example
+.postman/
+postman/globals/
 .DS_Store

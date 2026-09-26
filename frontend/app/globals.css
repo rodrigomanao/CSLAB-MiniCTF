@@ -96,6 +96,7 @@ a { color: inherit; text-decoration: none; }
 .auth-submit { margin-top: 20px; border: 1px solid #ffffff; border-radius: 2px; padding: 13px 18px; background: #ffffff; color: #222628; font-size: 14px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; cursor: pointer; transition: background-color .2s ease, color .2s ease, transform .2s ease; }
 .auth-submit:hover { background: transparent; color: #ffffff; transform: translateY(-1px); }
 .auth-note { margin: 4px 0 0; color: #c9d7cc; font-size: 13px; line-height: 1.5; }
+.auth-error { margin: 4px 0 0; color: #f0b5b5; font-size: 13px; line-height: 1.5; }
 .auth-switch { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 30px; color: #b8babc; font-size: 14px; }
 .auth-switch a { color: #ffffff; font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
 @keyframes auth-panel-enter {

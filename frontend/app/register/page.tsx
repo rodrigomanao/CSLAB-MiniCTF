@@ -5,11 +5,32 @@ import SiteNav from '../components/SiteNav'
 import AuthLink from '../components/AuthLink'
 
 export default function RegisterPage() {
-  const [submitted, setSubmitted] = useState(false)
+  const [message, setMessage] = useState('')
+  const [error, setError] = useState('')
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    setSubmitted(true)
+    setMessage('')
+    setError('')
+    const formData = new FormData(event.currentTarget)
+
+    try {
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username: formData.get('username'),
+          email: formData.get('email'),
+          password: formData.get('password'),
+        }),
+      })
+      const data = await response.json()
+      if (!response.ok) throw new Error(data.detail ?? 'Registration failed.')
+      setMessage('Account created successfully. You can now log in.')
+      event.currentTarget.reset()
+    } catch (submissionError) {
+      setError(submissionError instanceof Error ? submissionError.message : 'Registration failed.')
+    }
   }
 
   return (
@@ -32,7 +53,8 @@ export default function RegisterPage() {
             <input id="register-password" name="password" type="password" autoComplete="new-password" required />
 
             <button className="auth-submit" type="submit">Register</button>
-            {submitted && <p className="auth-note" role="status">The registration form is ready for the account API.</p>}
+            {message && <p className="auth-note" role="status">{message}</p>}
+            {error && <p className="auth-error" role="alert">{error}</p>}
           </form>
 
           <div className="auth-switch">
