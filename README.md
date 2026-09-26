@@ -5,6 +5,12 @@ A minimal full-stack blog starter with a Next.js + TypeScript frontend and a Fas
 ## Structure
 
 - `frontend/` - Next.js TypeScript app
+  - `app/Home/` - home page
+  - `app/News/` - news and articles page
+  - `app/AboutUs/` - about the laboratory page
+  - `public/articles/` - article photos
+  - `public/articles/authors/` - author photos
+  - `public/logos/` - logos and branding assets
 - `backend/` - Python API powered by FastAPI
 
 ## Run the backend

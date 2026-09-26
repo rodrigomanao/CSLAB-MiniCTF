@@ -13,13 +13,29 @@ app.add_middleware(
 
 posts = [
     {
-        "id": index,
+        "id": 1,
         "title": "CTF Shift APPens'26",
-        "excerpt": "CSLab (Cybersecurity Lab) is excited to announce a Capture The Flag (CTF) challenge for the DEI community. This event is designed to spark interest in cybersecurity, stimulate logical reasoning and provide a hands-on experience in a dynamic and collaborative environment.",
+        "excerpt": "CSLab hosted the CTF Shift APPens'26 challenge for the DEI community. The event encouraged interest in cybersecurity, strengthened logical reasoning, and offered participants a hands-on experience in a dynamic and collaborative environment.",
         "author": "João R. Campos",
         "published": "May, 2026",
-    }
-    for index in range(1, 7)
+        "image": "/articles/ctf.png",
+    },
+    {
+        "id": 2,
+        "title": "CTF Trial Challenge for ShiftAppens",
+        "excerpt": "We hosted a Capture The Flag (CTF) Trial Challenge as a warm-up event for the main competition at ShiftAppens. The challenge helped us test the resilience and security of the infrastructure. Although it featured fewer challenges than the main event, it still gave participants an opportunity to practise their hacking skills in a controlled environment.",
+        "author": "João R. Campos",
+        "published": "2025",
+        "image": "/articles/trialshift25.png",
+    },
+    {
+        "id": 3,
+        "title": "CTF Shift APPens'25",
+        "excerpt": "As part of our training and event initiatives, we organized a CTF competition at ShiftAppens, a 48-hour programming and entrepreneurship event where teams collaborated on innovative technology projects. The competition challenged participants with cybersecurity scenarios that strengthened their ethical hacking, vulnerability analysis, and security problem-solving skills. It included challenges for beginners and experienced participants, as well as a dedicated training environment with guided challenges and step-by-step tutorials.",
+        "author": "João R. Campos",
+        "published": "2025",
+        "image": "/articles/shiftappens25.png",
+    },
 ]
 
 
