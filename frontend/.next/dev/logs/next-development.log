@@ -1,5 +1,0 @@
-{"timestamp":"00:00:00.882","source":"Server","level":"LOG","message":""}
-{"timestamp":"00:00:03.254","source":"Server","level":"ERROR","message":"Failed to proxy http://localhost:8000/api/posts AggregateError"}
-{"timestamp":"00:00:03.254","source":"Server","level":"ERROR","message":"AggregateError"}
-{"timestamp":"00:00:03.259","source":"Server","level":"ERROR","message":"Failed to proxy http://localhost:8000/api/posts AggregateError"}
-{"timestamp":"00:00:03.260","source":"Server","level":"ERROR","message":"AggregateError"}
