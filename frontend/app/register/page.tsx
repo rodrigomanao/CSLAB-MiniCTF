@@ -1,10 +1,14 @@
 'use client'
 
 import { FormEvent, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import SiteNav from '../components/SiteNav'
 import AuthLink from '../components/AuthLink'
+import { getApiErrorMessage } from '../components/api-error'
+import { AUTH_SESSION_KEY } from '../components/auth-session'
 
 export default function RegisterPage() {
+  const router = useRouter()
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
 
@@ -12,7 +16,8 @@ export default function RegisterPage() {
     event.preventDefault()
     setMessage('')
     setError('')
-    const formData = new FormData(event.currentTarget)
+    const form = event.currentTarget
+    const formData = new FormData(form)
 
     try {
       const response = await fetch('/api/auth/register', {
@@ -25,9 +30,14 @@ export default function RegisterPage() {
         }),
       })
       const data = await response.json()
-      if (!response.ok) throw new Error(data.detail ?? 'Registration failed.')
-      setMessage('Account created successfully. You can now log in.')
-      event.currentTarget.reset()
+      if (!response.ok) throw new Error(getApiErrorMessage(data, 'Registration failed.'))
+      window.localStorage.setItem(AUTH_SESSION_KEY, JSON.stringify({
+        id: data.id,
+        username: data.username,
+        email: data.email,
+        role: data.role,
+      }))
+      router.push(data.role === 'admin' ? '/admin-panel' : '/dashboard')
     } catch (submissionError) {
       setError(submissionError instanceof Error ? submissionError.message : 'Registration failed.')
     }

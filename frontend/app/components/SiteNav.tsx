@@ -20,7 +20,7 @@ export default function SiteNav({ search, onSearch, onSearchSubmit, showSearch =
   showLogo?: boolean
 }) {
   const pathname = usePathname().replace(/\/$/, '') || '/'
-  const currentPage = pathname === '/News' ? 'News' : pathname === '/AboutUs' ? 'AboutUs' : pathname === '/login' ? 'Login' : 'Home'
+  const currentPage = pathname === '/News' ? 'News' : pathname === '/AboutUs' ? 'AboutUs' : pathname === '/login' ? 'Login' : pathname === '/dashboard' ? 'Dashboard' : pathname === '/admin-panel' ? 'Admin' : 'Home'
 
   return (
     <header className={`navbar${showSearch ? '' : ' navbar-without-search'}${showLogo ? '' : ' navbar-without-logo'}`}>

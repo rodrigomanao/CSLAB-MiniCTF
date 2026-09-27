@@ -1,10 +1,14 @@
 'use client'
 
 import { FormEvent, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import SiteNav from '../components/SiteNav'
 import AuthLink from '../components/AuthLink'
+import { AUTH_SESSION_KEY } from '../components/auth-session'
+import { getApiErrorMessage } from '../components/api-error'
 
 export default function LoginPage() {
+  const router = useRouter()
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
 
@@ -12,7 +16,8 @@ export default function LoginPage() {
     event.preventDefault()
     setMessage('')
     setError('')
-    const formData = new FormData(event.currentTarget)
+    const form = event.currentTarget
+    const formData = new FormData(form)
 
     try {
       const response = await fetch('/api/auth/login', {
@@ -24,9 +29,15 @@ export default function LoginPage() {
         }),
       })
       const data = await response.json()
-      if (!response.ok) throw new Error(data.detail ?? 'Login failed.')
-      setMessage(`Welcome back, ${data.username}.`)
-      event.currentTarget.reset()
+      if (!response.ok) throw new Error(getApiErrorMessage(data, 'Login failed.'))
+      window.localStorage.setItem(AUTH_SESSION_KEY, JSON.stringify({
+        id: data.id,
+        username: data.username,
+        email: data.email,
+        role: data.role,
+      }))
+      form.reset()
+      router.push(data.role === 'admin' ? '/admin-panel' : '/dashboard')
     } catch (submissionError) {
       setError(submissionError instanceof Error ? submissionError.message : 'Login failed.')
     }

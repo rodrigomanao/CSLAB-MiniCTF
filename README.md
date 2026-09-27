@@ -16,6 +16,8 @@ A cybersecurity laboratory blog and controlled training environment for CS-Lab a
 │   │   ├── AboutUs/         # /AboutUs
 │   │   ├── login/           # /login
 │   │   ├── register/        # /register
+│   │   ├── dashboard/       # /dashboard
+│   │   ├── admin-panel/     # /admin-panel
 │   │   └── components/      # Shared navigation and article components
 │   └── public/              # Article and CISUC images
 ├── Makefile
@@ -72,8 +74,10 @@ The frontend proxies `/api/*` requests to the FastAPI server on port `8000`. If 
 | `/AboutUs` | CS-Lab information |
 | `/login` | Login interface |
 | `/register` | Account registration interface |
+| `/dashboard` | Authenticated user dashboard |
+| `/admin-panel` | Restricted administrator workspace |
 
-The login and registration pages currently provide the frontend flow and form layout. Persistent accounts, sessions, the dashboard, and the intentionally vulnerable CTF functionality will be implemented in later stages inside the isolated training environment.
+After a successful login, normal users are redirected to `/dashboard`. Users with the `admin` role are redirected to `/admin-panel`. The current frontend stores the returned profile in browser storage to support this first controlled prototype; production authentication should replace this with a server-side session or signed token.
 
 ## Database setup
 
