@@ -1,7 +1,7 @@
 from collections.abc import Iterator
 
 import psycopg
-from fastapi import Depends, FastAPI, HTTPException, status
+from fastapi import Depends, FastAPI, HTTPException, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, EmailStr, Field
 
@@ -67,7 +67,6 @@ class UserResponse(BaseModel):
 def get_db() -> Iterator[psycopg.Connection]:
     yield from get_connection()
 
-
 @app.get("/api/health")
 def health_check() -> dict[str, str]:
     return {"status": "ok"}
@@ -115,3 +114,20 @@ def login_user(payload: LoginRequest, db: psycopg.Connection = Depends(get_db)) 
     if user is None or not verify_password(payload.password, user[3]):
         raise HTTPException(status_code=401, detail="Invalid username/email or password.")
     return UserResponse(id=user[0], username=user[1], email=user[2], role=user[4])
+
+@app.get("/api/user", response_model=UserResponse)
+def get_user_by_id(
+    id: int,
+    db: psycopg.Connection = Depends(get_db),
+) -> UserResponse:
+    with db.cursor() as cursor:
+        cursor.execute(
+            "SELECT id, username, email, role FROM users WHERE id = %s",
+            (id,),
+        )
+        user = cursor.fetchone()
+
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found.")
+
+    return UserResponse(id=user[0], username=user[1], email=user[2], role=user[3])

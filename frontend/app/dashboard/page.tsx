@@ -20,7 +20,25 @@ export default function DashboardPage() {
       router.replace('/admin-panel')
       return
     }
-    setSession(currentSession)
+    
+    const fetchUserData = async () => {
+      try {
+        const response = await fetch(`/api/user?id=${currentSession.id}`, {
+          credentials: 'include', // envia o cookie de sessão para o backend
+        })
+
+        if (!response.ok) {
+          router.replace('/login')
+          return
+        }
+
+        const userData = await response.json()
+        setSession(userData)
+      } catch (error) {
+        console.error('Erro ao carregar dados do utilizador', error)
+      }
+    }
+    fetchUserData()
   }, [router])
 
   function handleLogout() {

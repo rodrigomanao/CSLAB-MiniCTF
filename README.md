@@ -65,6 +65,41 @@ make backend
 
 The frontend proxies `/api/*` requests to the FastAPI server on port `8000`. If the backend is not running, Next.js logs `ECONNREFUSED` and the API-backed content cannot be loaded.
 
+### Docker
+
+To run the project for the first time:
+
+```bash
+docker compose up --build
+```
+
+**Important:** this `docker-compose.yml` does not mount the code as volumes.
+Each service (`frontend`, `backend`) copies the code into the image at build
+time. This means that **every time you change code** (`.py`, `.tsx`, etc.),
+you need to rebuild the image for the change to take effect:
+
+```bash
+docker compose up -d --build
+```
+
+Running `docker compose restart` alone is **not enough**. It restarts the
+process, but keeps running the old code baked into the same image.
+
+To follow logs in real time (useful for catching backend/frontend errors):
+
+```bash
+docker compose logs -f backend
+docker compose logs -f frontend
+```
+
+To reset everything from scratch, including wiping the database data
+(recreates the schema from `database/schema.sql`):
+
+```bash
+docker compose down -v
+docker compose up --build
+```
+
 ## Main routes
 
 | Route | Purpose |
