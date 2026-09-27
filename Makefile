@@ -1,7 +1,7 @@
 SHELL := /bin/sh
 PYTHON := $(if $(wildcard .venv/bin/python),.venv/bin/python,python3)
 
-.PHONY: install dev frontend backend
+.PHONY: install dev frontend backend docker-up docker-down docker-reset
 
 install:
 	npm install
@@ -18,3 +18,13 @@ frontend:
 
 backend:
 	$(PYTHON) -m uvicorn backend.app.main:app --reload --port 8000
+
+docker-up:
+	docker compose up --build
+
+docker-down:
+	docker compose down
+
+docker-reset:
+	docker compose down -v
+	docker compose up --build
