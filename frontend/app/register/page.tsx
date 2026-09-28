@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import SiteNav from '../components/SiteNav'
 import AuthLink from '../components/AuthLink'
 import { getApiErrorMessage } from '../components/api-error'
-import { AUTH_SESSION_KEY } from '../components/auth-session'
+import { saveAuthSession } from '../components/auth-session'
 
 export default function RegisterPage() {
   const router = useRouter()
@@ -31,12 +31,13 @@ export default function RegisterPage() {
       })
       const data = await response.json()
       if (!response.ok) throw new Error(getApiErrorMessage(data, 'Registration failed.'))
-      window.localStorage.setItem(AUTH_SESSION_KEY, JSON.stringify({
+      saveAuthSession({
         id: data.id,
         username: data.username,
         email: data.email,
         role: data.role,
-      }))
+        accessToken: data.access_token,
+      })
       router.push(data.role === 'admin' ? '/admin-panel' : '/dashboard')
     } catch (submissionError) {
       setError(submissionError instanceof Error ? submissionError.message : 'Registration failed.')

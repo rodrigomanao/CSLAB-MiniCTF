@@ -16,11 +16,38 @@ export default function AdminPanelPage() {
       router.replace('/login')
       return
     }
-    if (currentSession.role !== 'admin') {
-      router.replace('/dashboard')
-      return
+
+    const fetchAdminData = async () => {
+      try {
+        const response = await fetch('/api/admin/me', {
+          headers: { Authorization: `Bearer ${currentSession.accessToken}` },
+        })
+
+        if (response.status === 403) {
+          router.replace('/dashboard')
+          return
+        }
+
+        if (!response.ok) {
+          clearAuthSession()
+          router.replace('/login')
+          return
+        }
+
+        const adminData = await response.json()
+        setSession({
+          id: adminData.id,
+          username: adminData.username,
+          email: adminData.email,
+          role: adminData.role,
+          accessToken: adminData.access_token,
+        })
+      } catch (error) {
+        console.error('Erro ao carregar dados de administrador', error)
+        router.replace('/login')
+      }
     }
-    setSession(currentSession)
+    fetchAdminData()
   }, [router])
 
   function handleLogout() {

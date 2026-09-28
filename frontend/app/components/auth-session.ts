@@ -3,6 +3,7 @@ export type AuthSession = {
   username: string
   email: string
   role: string
+  accessToken: string
 }
 
 export const AUTH_SESSION_KEY = 'cslab-auth-session'
@@ -17,6 +18,10 @@ export function getAuthSession(): AuthSession | null {
     window.localStorage.removeItem(AUTH_SESSION_KEY)
     return null
   }
+}
+
+export function saveAuthSession(session: AuthSession) {
+  window.localStorage.setItem(AUTH_SESSION_KEY, JSON.stringify(session))
 }
 
 export function clearAuthSession() {

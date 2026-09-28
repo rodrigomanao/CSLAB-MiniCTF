@@ -24,7 +24,7 @@ export default function DashboardPage() {
     const fetchUserData = async () => {
       try {
         const response = await fetch(`/api/user?id=${currentSession.id}`, {
-          credentials: 'include', // envia o cookie de sessão para o backend
+          headers: { Authorization: `Bearer ${currentSession.accessToken}` },
         })
 
         if (!response.ok) {
@@ -33,7 +33,13 @@ export default function DashboardPage() {
         }
 
         const userData = await response.json()
-        setSession(userData)
+        setSession({
+          id: userData.id,
+          username: userData.username,
+          email: userData.email,
+          role: userData.role,
+          accessToken: userData.access_token,
+        })
       } catch (error) {
         console.error('Erro ao carregar dados do utilizador', error)
       }

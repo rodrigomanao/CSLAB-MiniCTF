@@ -4,7 +4,7 @@ import { FormEvent, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import SiteNav from '../components/SiteNav'
 import AuthLink from '../components/AuthLink'
-import { AUTH_SESSION_KEY } from '../components/auth-session'
+import { saveAuthSession } from '../components/auth-session'
 import { getApiErrorMessage } from '../components/api-error'
 
 export default function LoginPage() {
@@ -30,12 +30,13 @@ export default function LoginPage() {
       })
       const data = await response.json()
       if (!response.ok) throw new Error(getApiErrorMessage(data, 'Login failed.'))
-      window.localStorage.setItem(AUTH_SESSION_KEY, JSON.stringify({
+      saveAuthSession({
         id: data.id,
         username: data.username,
         email: data.email,
         role: data.role,
-      }))
+        accessToken: data.access_token,
+      })
       form.reset()
       router.push(data.role === 'admin' ? '/admin-panel' : '/dashboard')
     } catch (submissionError) {

@@ -112,7 +112,7 @@ docker compose up --build
 | `/dashboard` | Authenticated user dashboard |
 | `/admin-panel` | Restricted administrator workspace |
 
-After a successful login, normal users are redirected to `/dashboard`. Users with the `admin` role are redirected to `/admin-panel`. The current frontend stores the returned profile in browser storage to support this first controlled prototype; production authentication should replace this with a server-side session or signed token.
+After a successful login, normal users are redirected to `/dashboard`. Users with the `admin` role are redirected to `/admin-panel`. The frontend keeps the profile and the access token in browser storage, but the restricted areas are now decided by the API: `/admin-panel` is only rendered when the API confirms that the token belongs to an administrator.
 
 ## Database setup
 
@@ -146,6 +146,11 @@ make backend
 
 The SQL script creates the `users` table and seeds three fictional accounts. The `super-admin` account has `id=1`, which is useful for the controlled IDOR exercise. The seed passwords are `AdminPass123!`, `TrainingPass123!` and `StudentPass123!`, respectively; change them before sharing the isolated environment.
 
+The script is idempotent, so it is safe to run it again over an existing
+database. It adds the `access_token` column with `ALTER TABLE ... ADD COLUMN IF
+NOT EXISTS`, which is what a database created before access tokens existed
+needs.
+
 The authentication endpoints are:
 
 ```text
@@ -154,6 +159,46 @@ POST /api/auth/login
 ```
 
 You can test them with Postman or with the frontend forms. New passwords are stored as Argon2 hashes; they are never stored as plain text. The API queries use `%s` parameters rather than string interpolation.
+
+## Access tokens
+
+Both `/api/auth/register` and `/api/auth/login` generate a new opaque access
+token (`secrets.token_urlsafe`), write it to `users.access_token` and return it
+in the `access_token` field of the response. Every login rotates the token, so
+only the most recent one stays valid.
+
+The frontend keeps the token in `localStorage` under `cslab-auth-session` and
+sends it as a bearer header:
+
+```text
+GET /api/user?id=2
+Authorization: Bearer <access_token>
+```
+
+Requests without a valid token get `401`. `GET /api/admin/me` returns `403`
+unless the token belongs to an account with the `admin` role.
+
+## Training exercise: IDOR on the dashboard
+
+`GET /api/user` is **intentionally vulnerable** and must stay that way while the
+exercise is active. It checks that a valid token was sent, but then resolves
+the profile from the `id` query parameter instead of from the token, and it
+returns the access token of the account it looked up.
+
+That gives participants the two intended paths to the admin panel:
+
+1. **Burp match and replace** — intercept the dashboard request and change
+   `?id=2` to `?id=1`. The response contains the `super-admin` profile and its
+   access token.
+2. **Local storage swap** — replace the `accessToken` in the
+   `cslab-auth-session` local storage entry with the token captured above and
+   open `/admin-panel`.
+
+Do not "fix" `get_user_by_id` in `backend/app/main.py` while the event is
+running, and do not log in as `super-admin` during the event: logging in
+rotates its token and invalidates any token participants already captured. The
+token for the seeded `super-admin` is in `database/schema.sql`; the ones for
+`training-user` and `student-user` rotate on their first login.
 
 The repository also includes a REST Client request file at `requests/cslab-api.rest`. Install the VS Code **REST Client** extension and use the `Send Request` link above each request to test the API directly from the editor.
 

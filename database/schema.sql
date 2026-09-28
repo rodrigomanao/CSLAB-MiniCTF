@@ -4,31 +4,37 @@ CREATE TABLE IF NOT EXISTS users (
     email VARCHAR(255) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
     role VARCHAR(20) NOT NULL DEFAULT 'user',
+    access_token VARCHAR(128),
     created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-INSERT INTO users (id, username, email, password_hash, role)
+ALTER TABLE users ADD COLUMN IF NOT EXISTS access_token VARCHAR(128);
+
+INSERT INTO users (id, username, email, password_hash, role, access_token)
 VALUES
     (
         1,
         'super-admin',
         'super-admin@cslab.pt',
         '$argon2id$v=19$m=65536,t=3,p=4$G8CyHuxpyi/54vzUNM9aaA$JJnewZXxGG4O3b9XlYx27YY71GWgqj7iL0pSdaTDX78',
-        'admin'
+        'admin',
+        'sBJcbXYuidguOxSeEaDfz9L_KENWEsUyJDY49lTKAdI'
     ),
     (
         2,
         'training-user',
         'training-user@cslab.pt',
         '$argon2id$v=19$m=65536,t=3,p=4$cxGUJojYkmztrH1HrQjUWg$pODT08IKtdwgjANmm7Ta3UudJGeXsIXLP0cvlFK7fPs',
-        'user'
+        'user',
+        'e6l-vZefslBIXenXznwxa0vcx7mV0ZYyGKeaFGkjSoU'
     ),
     (
         3,
         'student-user',
         'student-user@cslab.pt',
         '$argon2id$v=19$m=65536,t=3,p=4$8YwWOt5IKLgnztc+FBh79A$3tA6PiW8YScQWB7lJl/8h2Z5gJmNQiMN1d74Yy2c/R0',
-        'user'
+        'user',
+        'ElD82AL5LONq5_aZx4CZ-wqOwfCxNEz_UnfT1tAmjiw'
     )
 ON CONFLICT (id) DO NOTHING;
 

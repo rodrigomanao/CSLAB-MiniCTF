@@ -8,6 +8,13 @@
 @userEmail = training-user@cslab.pt
 @userPassword = TrainingPass123!
 
+### 0. Tokens captured from the login/register responses below
+# The REST Client can capture a response header with:
+#   # @name accessToken
+#   POST {{baseUrl}}/api/auth/login
+@accessToken = {{login-response.body.access_token}}
+@adminAccessToken = {{adminLogin-response.body.access_token}}
+
 ### 1. Backend health check
 # Expected: 200
 GET {{baseUrl}}/api/health
@@ -28,7 +35,8 @@ Content-Type: application/json
 }
 
 ### 4. Login with the newly registered username
-# Expected: 200 with the created user's id, username, email and role.
+# Expected: 200 with the created user's id, username, email, role and access_token.
+# @name login
 POST {{baseUrl}}/api/auth/login
 Content-Type: application/json
 
@@ -48,7 +56,8 @@ Content-Type: application/json
 }
 
 ### 6. Login as the seeded super-admin
-# Controlled training account. Expected: 200 with id 1 and role admin.
+# Controlled training account. Expected: 200 with id 1, role admin and an access_token.
+# @name adminLogin
 POST {{baseUrl}}/api/auth/login
 Content-Type: application/json
 
@@ -58,7 +67,8 @@ Content-Type: application/json
 }
 
 ### 7. Login as the seeded training user by email
-# Expected: 200 with id 2 and role user.
+# Expected: 200 with id 2, role user and an access_token.
+# @name userLogin
 POST {{baseUrl}}/api/auth/login
 Content-Type: application/json
 
@@ -86,3 +96,35 @@ Content-Type: application/json
   "identity": "{{adminUsername}}",
   "password": "WrongPassword123!"
 }
+
+### 10. Dashboard profile request, as the frontend sends it
+# Expected: 200 with your own profile. Copy the access_token from request 7
+# into @accessToken first.
+GET {{baseUrl}}/api/user?id=2
+Authorization: Bearer {{accessToken}}
+
+### 11. Dashboard profile request without a token
+# Expected: 401
+GET {{baseUrl}}/api/user?id=2
+
+### 12. Dashboard profile request with an invalid token
+# Expected: 401
+GET {{baseUrl}}/api/user?id=2
+Authorization: Bearer not-a-real-token
+
+### 13. Training exercise: change the id in request 10 to 1
+# Expected: 200 with the super-admin profile, including its access_token.
+# This is the intentional IDOR used for the exercise.
+GET {{baseUrl}}/api/user?id=1
+Authorization: Bearer {{accessToken}}
+
+### 14. Restricted admin area with a normal user token
+# Expected: 403
+GET {{baseUrl}}/api/admin/me
+Authorization: Bearer {{accessToken}}
+
+### 15. Restricted admin area with the token from request 13
+# Expected: 200 with the super-admin profile.
+GET {{baseUrl}}/api/admin/me
+Authorization: Bearer {{adminAccessToken}}
+
