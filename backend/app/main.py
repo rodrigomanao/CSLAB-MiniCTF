@@ -1,3 +1,4 @@
+import os
 from collections.abc import Iterator
 
 import psycopg
@@ -185,6 +186,18 @@ def get_user_by_id(
         role=user[3],
         access_token=user[4] or "",
     )
+
+
+@app.get("/api/admin/flag")
+def get_admin_flag(token_user: tuple[int, str, str, str] = Depends(require_token)) -> dict[str, str]:
+    if token_user[3] != "admin":
+        raise HTTPException(status_code=403, detail="Administrator privileges are required.")
+
+    flag = os.getenv("EVENT_FLAG")
+    if not flag:
+        raise HTTPException(status_code=503, detail="The event flag is not configured.")
+
+    return {"flag": flag}
 
 
 @app.get("/api/admin/me", response_model=UserResponse)

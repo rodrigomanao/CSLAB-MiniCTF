@@ -9,6 +9,8 @@ import { AuthSession, clearAuthSession, getAuthSession } from '../components/aut
 export default function AdminPanelPage() {
   const router = useRouter()
   const [session, setSession] = useState<AuthSession | null>(null)
+  const [flag, setFlag] = useState('')
+  const [flagError, setFlagError] = useState('')
 
   useEffect(() => {
     const currentSession = getAuthSession()
@@ -50,6 +52,22 @@ export default function AdminPanelPage() {
     fetchAdminData()
   }, [router])
 
+  async function handleRevealFlag() {
+    if (!session) return
+    setFlagError('')
+    try {
+      const response = await fetch('/api/admin/flag', {
+        headers: { Authorization: `Bearer ${session.accessToken}` },
+        cache: 'no-store',
+      })
+      if (!response.ok) throw new Error('Flag request failed')
+      const data = await response.json()
+      setFlag(data.flag)
+    } catch {
+      setFlagError('Could not reveal the flag. Please try again.')
+    }
+  }
+
   function handleLogout() {
     clearAuthSession()
     router.replace('/login')
@@ -88,10 +106,11 @@ export default function AdminPanelPage() {
           </article>
 
           <article className="admin-feature">
-            <p className="eyebrow">Next operation</p>
-            <h2>Create a new page.</h2>
-            <p>This area will connect to the controlled page-creation challenge.</p>
-            <button className="workspace-action" type="button" disabled>Open page editor</button>
+            <p className="eyebrow">Challenge completed</p>
+            <h2>Claim your flag.</h2>
+            <p>You reached the admin panel. Reveal your flag to complete the challenge.</p>
+            <button className="workspace-action" type="button" onClick={handleRevealFlag}>Reveal flag</button>
+            <p aria-live="polite">{flag && <code>{flag}</code>}{flagError}</p>
           </article>
 
           <article className="admin-feature">
