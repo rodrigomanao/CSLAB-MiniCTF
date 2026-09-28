@@ -66,6 +66,20 @@ class UserResponse(BaseModel):
     email: EmailStr
     role: str
 
+class PageCreateRequest(BaseModel):
+    title: str = Field(min_length=1, max_length=255)
+    html: str = Field(min_length=1, max_length=200_000) 
+    author: str = Field(min_length=1, max_length=100)
+    published: str = Field(min_length=1, max_length=50)
+    image: str = Field(default="", max_length=500)
+
+class PageResponse(BaseModel):
+    id: int
+    title: str
+    excerpt: str
+    author: str
+    published: str
+    image: str
 
 def get_db() -> Iterator[psycopg.Connection]:
     yield from get_connection()
@@ -156,3 +170,38 @@ def get_user_by_id(
         raise HTTPException(status_code=404, detail="User not found.")
 
     return UserResponse(id=user[0], username=user[1], email=user[2], role=user[3])
+
+@app.post("/api/pages", response_model=PageResponse, status_code=status.HTTP_201_CREATED)
+def create_page(payload: PageCreateRequest, db: psycopg.Connection = Depends(get_db)) -> PageResponse:
+    with db.cursor() as cursor:
+        cursor.execute(
+            """
+            INSERT INTO pages (title, html, author, published, image)
+            VALUES (%s, %s, %s, %s, %s)
+            RETURNING id, title, html, author, published, image
+            """,
+            (payload.title, payload.html, payload.author, payload.published, payload.image),
+        )
+        row = cursor.fetchone()
+
+    if row is None:
+        raise HTTPException(status_code=500, detail="Page could not be created.")
+    return PageResponse(id=row[0], title=row[1], excerpt=row[2], author=row[3], published=row[4], image=row[5])
+
+
+@app.get("/api/pages", response_model=list[PageResponse])
+def list_pages(db: psycopg.Connection = Depends(get_db)) -> list[PageResponse]:
+    with db.cursor() as cursor:
+        cursor.execute(
+            """
+            SELECT id, title, html, author, published, image
+            FROM pages
+            ORDER BY created_at DESC
+            """
+        )
+        rows = cursor.fetchall()
+
+    return [
+        PageResponse(id=r[0], title=r[1], excerpt=r[2], author=r[3], published=r[4], image=r[5])
+        for r in rows
+    ]

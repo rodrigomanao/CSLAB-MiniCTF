@@ -24,7 +24,7 @@ export default function SiteNav({ search, onSearch, onSearchSubmit, showSearch =
 }) {
   const router = useRouter()
   const pathname = usePathname().replace(/\/$/, '') || '/'
-  const currentPage = pathname === '/News' ? 'News' : pathname === '/AboutUs' ? 'AboutUs' : pathname === '/login' ? 'Login' : pathname === '/dashboard' ? 'Dashboard' : pathname === '/admin-interface' ? 'Admin' : 'Home'
+  const currentPage = pathname === '/News' ? 'News' : pathname === '/Pages' ? 'Pages' : pathname === '/AboutUs' ? 'AboutUs' : pathname === '/login' ? 'Login' : pathname === '/dashboard' ? 'Dashboard' : pathname === '/admin-interface' ? 'Admin' : 'Home'
   const [session, setSession] = useState<AuthSession | null>(null)
   const [accountOpen, setAccountOpen] = useState(false)
 
@@ -76,6 +76,7 @@ export default function SiteNav({ search, onSearch, onSearchSubmit, showSearch =
       <nav className="nav-links" aria-label="Main navigation">
         <Link href="/Home" className={currentPage === 'Home' ? 'active' : undefined}>Home</Link>
         <Link href="/News" className={currentPage === 'News' ? 'active' : undefined}>News</Link>
+        <Link href="/Pages" className={currentPage === 'Pages' ? 'active' : undefined}>Pages</Link>
         <Link href="/AboutUs" className={currentPage === 'AboutUs' ? 'active' : undefined}>About us</Link>
         {session ? (
           <div className="account-menu">

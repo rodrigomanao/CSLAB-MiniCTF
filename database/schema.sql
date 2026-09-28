@@ -8,6 +8,16 @@ CREATE TABLE IF NOT EXISTS users (
     created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE IF NOT EXISTS pages (
+    id         SERIAL PRIMARY KEY,
+    title      VARCHAR(255) NOT NULL,
+    html       TEXT NOT NULL,
+    author     VARCHAR(100) NOT NULL,
+    published  VARCHAR(50)  NOT NULL,
+    image      VARCHAR(500) NOT NULL DEFAULT '',
+    created_at TIMESTAMPTZ  NOT NULL DEFAULT now()
+);
+
 INSERT INTO users (id, username, email, password_hash, pin, role)
 VALUES
     (
@@ -36,8 +46,40 @@ VALUES
     )
 ON CONFLICT (id) DO NOTHING;
 
+INSERT INTO pages (title, html, author, published, image)
+SELECT
+    'Welcome to CS-Lab',
+    $html$
+<style>
+  .welcome { font-family: system-ui, sans-serif; line-height: 1.6; }
+  .welcome h3 { margin: 0 0 8px; color: #6ee7b7; }
+  .welcome code { padding: 2px 6px; border-radius: 4px; background: rgba(255,255,255,.08); }
+  .welcome button { margin-top: 12px; padding: 8px 14px; border: 1px solid #6ee7b7; border-radius: 8px; background: transparent; color: #6ee7b7; cursor: pointer; }
+</style>
+<div class="welcome">
+  <h3>Welcome to the CS-Lab pages</h3>
+  <p>This page is rendered from raw <code>HTML</code>, styled with <code>CSS</code> and made interactive with <code>JavaScript</code>.</p>
+  <button id="welcome-btn">Click me</button>
+  <p id="welcome-out"></p>
+</div>
+<script>
+  var clicks = 0;
+  document.getElementById('welcome-btn').addEventListener('click', function () {
+    clicks++;
+    document.getElementById('welcome-out').textContent = 'Clicked ' + clicks + ' time(s)';
+  });
+</script>
+$html$,
+    'admin@cslab',
+    '2026',
+    '/articles/ctf.png'
+WHERE NOT EXISTS (
+    SELECT 1 FROM pages WHERE title = 'Welcome to CS-Lab'
+);
+
 SELECT setval(
     pg_get_serial_sequence('users', 'id'),
     GREATEST((SELECT MAX(id) FROM users), 1),
     true
 );
+
