@@ -16,10 +16,6 @@ export default function DashboardPage() {
       router.replace('/login')
       return
     }
-    if (currentSession.role === 'admin') {
-      router.replace('/admin-panel')
-      return
-    }
     
     const fetchUserData = async () => {
       try {
