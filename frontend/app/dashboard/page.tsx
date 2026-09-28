@@ -17,7 +17,7 @@ export default function DashboardPage() {
       return
     }
     if (currentSession.role === 'admin') {
-      router.replace('/admin-panel')
+      router.replace('/admin-interface')
       return
     }
     

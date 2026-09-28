@@ -3,17 +3,19 @@ CREATE TABLE IF NOT EXISTS users (
     username VARCHAR(50) NOT NULL UNIQUE,
     email VARCHAR(255) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
+    pin VARCHAR(4),
     role VARCHAR(20) NOT NULL DEFAULT 'user',
     created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-INSERT INTO users (id, username, email, password_hash, role)
+INSERT INTO users (id, username, email, password_hash, pin, role)
 VALUES
     (
         1,
-        'super-admin',
+        'admin@cslab',
         'super-admin@cslab.pt',
         '$argon2id$v=19$m=65536,t=3,p=4$G8CyHuxpyi/54vzUNM9aaA$JJnewZXxGG4O3b9XlYx27YY71GWgqj7iL0pSdaTDX78',
+        '7412',
         'admin'
     ),
     (
@@ -21,6 +23,7 @@ VALUES
         'training-user',
         'training-user@cslab.pt',
         '$argon2id$v=19$m=65536,t=3,p=4$cxGUJojYkmztrH1HrQjUWg$pODT08IKtdwgjANmm7Ta3UudJGeXsIXLP0cvlFK7fPs',
+        NULL,
         'user'
     ),
     (
@@ -28,6 +31,7 @@ VALUES
         'student-user',
         'student-user@cslab.pt',
         '$argon2id$v=19$m=65536,t=3,p=4$8YwWOt5IKLgnztc+FBh79A$3tA6PiW8YScQWB7lJl/8h2Z5gJmNQiMN1d74Yy2c/R0',
+        NULL,
         'user'
     )
 ON CONFLICT (id) DO NOTHING;

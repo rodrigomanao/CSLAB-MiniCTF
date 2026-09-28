@@ -7,19 +7,19 @@ A cybersecurity laboratory blog and controlled training environment for CS-Lab a
 ```text
 .
 ├── backend/
-│   ├── app/main.py          # FastAPI API
-│   └── requirements.txt     # Python dependencies
+│   ├── app/main.py             # FastAPI API
+│   └── requirements.txt        # Python dependencies
 ├── frontend/
 │   ├── app/
-│   │   ├── Home/            # /
-│   │   ├── News/            # /News
-│   │   ├── AboutUs/         # /AboutUs
-│   │   ├── login/           # /login
-│   │   ├── register/        # /register
-│   │   ├── dashboard/       # /dashboard
-│   │   ├── admin-panel/     # /admin-panel
-│   │   └── components/      # Shared navigation and article components
-│   └── public/              # Article and CISUC images
+│   │   ├── Home/               # /
+│   │   ├── News/               # /News
+│   │   ├── AboutUs/            # /AboutUs
+│   │   ├── login/              # /login
+│   │   ├── register/           # /register
+│   │   ├── dashboard/          # /dashboard
+│   │   ├── admin-interface/    # /admin-interface
+│   │   └── components/         # Shared navigation and article components
+│   └── public/                 # Article and CISUC images
 ├── Makefile
 └── package.json
 ```
@@ -110,9 +110,9 @@ docker compose up --build
 | `/login` | Login interface |
 | `/register` | Account registration interface |
 | `/dashboard` | Authenticated user dashboard |
-| `/admin-panel` | Restricted administrator workspace |
+| `/admin-interface` | Restricted administrator workspace |
 
-After a successful login, normal users are redirected to `/dashboard`. Users with the `admin` role are redirected to `/admin-panel`. The current frontend stores the returned profile in browser storage to support this first controlled prototype; production authentication should replace this with a server-side session or signed token.
+After a successful login, normal users are redirected to `/dashboard`. Users with the `admin` role are redirected to `/admin-interface`. The current frontend stores the returned profile in browser storage to support this first controlled prototype; production authentication should replace this with a server-side session or signed token.
 
 ## Database setup
 

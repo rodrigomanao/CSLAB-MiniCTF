@@ -56,6 +56,9 @@ class LoginRequest(BaseModel):
     identity: str = Field(min_length=1, max_length=255)
     password: str = Field(min_length=1, max_length=128)
 
+class AdminLoginRequest(BaseModel):
+    username: str = Field(min_length=1, max_length=255)
+    pin: str = Field(min_length=4, max_length=4)
 
 class UserResponse(BaseModel):
     id: int
@@ -83,8 +86,8 @@ def register_user(payload: RegisterRequest, db: psycopg.Connection = Depends(get
         with db.cursor() as cursor:
             cursor.execute(
                 """
-                INSERT INTO users (username, email, password_hash)
-                VALUES (%s, %s, %s)
+                INSERT INTO users (username, email, password_hash, pin)
+                VALUES (%s, %s, %s, NULL)
                 RETURNING id, username, email, role
                 """,
                 (payload.username, payload.email, hash_password(payload.password)),
@@ -114,6 +117,28 @@ def login_user(payload: LoginRequest, db: psycopg.Connection = Depends(get_db)) 
     if user is None or not verify_password(payload.password, user[3]):
         raise HTTPException(status_code=401, detail="Invalid username/email or password.")
     return UserResponse(id=user[0], username=user[1], email=user[2], role=user[4])
+
+@app.post("/api/auth/admin-login", response_model=UserResponse)
+def admin_login(payload: AdminLoginRequest, db: psycopg.Connection = Depends(get_db)) -> UserResponse:
+    with db.cursor() as cursor:
+        # Nota: Precisas de garantir que a tabela 'users' tem a coluna 'pin'.
+        cursor.execute(
+            """
+            SELECT id, username, email, role, pin
+            FROM users
+            WHERE username = %s
+            """,
+            (payload.username,)
+        )
+        user = cursor.fetchone()
+
+    if user is None or user[4] != payload.pin:
+        raise HTTPException(status_code=401, detail="Credenciais inválidas.")
+
+    if user[3] != 'admin':
+        raise HTTPException(status_code=403, detail="Acesso negado. A conta não possui privilégios de Administrador.")
+
+    return UserResponse(id=user[0], username=user[1], email=user[2], role=user[3])
 
 @app.get("/api/user", response_model=UserResponse)
 def get_user_by_id(

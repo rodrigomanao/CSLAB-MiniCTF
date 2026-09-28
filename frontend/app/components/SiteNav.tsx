@@ -24,7 +24,7 @@ export default function SiteNav({ search, onSearch, onSearchSubmit, showSearch =
 }) {
   const router = useRouter()
   const pathname = usePathname().replace(/\/$/, '') || '/'
-  const currentPage = pathname === '/News' ? 'News' : pathname === '/AboutUs' ? 'AboutUs' : pathname === '/login' ? 'Login' : pathname === '/dashboard' ? 'Dashboard' : pathname === '/admin-panel' ? 'Admin' : 'Home'
+  const currentPage = pathname === '/News' ? 'News' : pathname === '/AboutUs' ? 'AboutUs' : pathname === '/login' ? 'Login' : pathname === '/dashboard' ? 'Dashboard' : pathname === '/admin-interface' ? 'Admin' : 'Home'
   const [session, setSession] = useState<AuthSession | null>(null)
   const [accountOpen, setAccountOpen] = useState(false)
 

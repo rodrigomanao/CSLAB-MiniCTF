@@ -37,7 +37,7 @@ export default function RegisterPage() {
         email: data.email,
         role: data.role,
       }))
-      router.push(data.role === 'admin' ? '/admin-panel' : '/dashboard')
+      router.push(data.role === 'admin' ? '/admin-interface' : '/dashboard')
     } catch (submissionError) {
       setError(submissionError instanceof Error ? submissionError.message : 'Registration failed.')
     }

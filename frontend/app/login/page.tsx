@@ -37,7 +37,7 @@ export default function LoginPage() {
         role: data.role,
       }))
       form.reset()
-      router.push(data.role === 'admin' ? '/admin-panel' : '/dashboard')
+      router.push(data.role === 'admin' ? '/admin-interface' : '/dashboard')
     } catch (submissionError) {
       setError(submissionError instanceof Error ? submissionError.message : 'Login failed.')
     }
