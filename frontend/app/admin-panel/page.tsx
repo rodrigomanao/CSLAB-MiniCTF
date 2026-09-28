@@ -11,6 +11,8 @@ export default function AdminPanelPage() {
   const [session, setSession] = useState<AuthSession | null>(null)
   const [flag, setFlag] = useState('')
   const [flagError, setFlagError] = useState('')
+  const [isRevealing, setIsRevealing] = useState(false)
+  const [isCopied, setIsCopied] = useState(false)
 
   useEffect(() => {
     const currentSession = getAuthSession()
@@ -53,8 +55,9 @@ export default function AdminPanelPage() {
   }, [router])
 
   async function handleRevealFlag() {
-    if (!session) return
+    if (!session || isRevealing || flag) return
     setFlagError('')
+    setIsRevealing(true)
     try {
       const response = await fetch('/api/admin/flag', {
         headers: { Authorization: `Bearer ${session.accessToken}` },
@@ -65,7 +68,20 @@ export default function AdminPanelPage() {
       setFlag(data.flag)
     } catch {
       setFlagError('Could not reveal the flag. Please try again.')
+    } finally {
+      setIsRevealing(false)
     }
+  }
+
+  async function handleCopyFlag() {
+    if (!flag) return
+    try {
+      await navigator.clipboard.writeText(flag)
+    } catch {
+      return
+    }
+    setIsCopied(true)
+    setTimeout(() => setIsCopied(false), 1800)
   }
 
   function handleLogout() {
@@ -105,12 +121,37 @@ export default function AdminPanelPage() {
             </dl>
           </article>
 
-          <article className="admin-feature">
+          <article className="admin-feature admin-feature-flag">
             <p className="eyebrow">Challenge completed</p>
             <h2>Claim your flag.</h2>
             <p>You reached the admin panel. Reveal your flag to complete the challenge.</p>
-            <button className="workspace-action" type="button" onClick={handleRevealFlag}>Reveal flag</button>
-            <p aria-live="polite">{flag && <code>{flag}</code>}{flagError}</p>
+            <button
+              className={`workspace-action${flag ? ' workspace-action-done' : ''}`}
+              type="button"
+              onClick={handleRevealFlag}
+              disabled={isRevealing || Boolean(flag)}
+            >
+              <span className="workspace-action-glow" aria-hidden="true" />
+              <span className="workspace-action-label">
+                {flag ? 'Flag unlocked' : isRevealing ? 'Decrypting…' : 'Reveal flag'}
+              </span>
+              <span className="workspace-action-icon" aria-hidden="true">{flag ? '✓' : '⚿'}</span>
+            </button>
+            <div className="flag-output" aria-live="polite">
+              {flag && (
+                <>
+                  <code className="flag-value">{flag}</code>
+                  <button
+                    className={`flag-copy${isCopied ? ' flag-copy-done' : ''}`}
+                    type="button"
+                    onClick={handleCopyFlag}
+                  >
+                    {isCopied ? 'Copied!' : 'Copy flag'}
+                  </button>
+                </>
+              )}
+              {flagError && <p className="flag-error">{flagError}</p>}
+            </div>
           </article>
 
           <article className="admin-feature">
